@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    paths:
+      - '**.c'
+      - '**.h'
+      - '.github/workflows/**'
+  pull_request:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up C compiler
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: gcc
+
+      - name: Build example
+        run: |
+          gcc -std=c11 -Wall -Wextra -pedantic -o dijson_example example/main.c -pthread
+          ./dijson_example || true
+        shell: bash
